@@ -5,16 +5,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>Mangala</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/galleria.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/galleria/1.5.7/themes/classic/galleria.classic.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/immutable/3.8.2/immutable.min.js"></script>
+    <link rel="stylesheet" href="assets/stylesheets/index.css"></link>
+    <link rel="stylesheet" href="assets/stylesheets/resets.css"></link>
 </head>
 
 <body>
+    <header>
+        <h1>Mangala</h1>
+    </header>
     <main>
-        <div id="root">
-            <h1>Loading...</h1>
+        <div id="root" class="bg">
+        </div>
+        <div id="loader-container">
+            <img src="assets/mars.gif"/ id="loader">
+        </div>
+        <script src="/client.js"></script>
+        <div class="selection-panel">
+            <button onclick="update(0)">Curiosity</button>
+            <button onclick="update(1)">Oppurtunity</button>
+            <button onclick="update(2)">Spirit</button>
         </div>
     </main>
+    <footer>Project as part of Nanodegree</footer>
 </body>
-<script src="/client.js"></script>
 
 </html>

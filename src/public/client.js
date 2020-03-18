@@ -1,105 +1,113 @@
-let store = {
-    user: { name: "Student" },
-    apod: '',
+// Store
+let store = Immutable.Map({
+    show: 0,
     rovers: ['Curiosity', 'Opportunity', 'Spirit'],
-}
+    photos: null
+})
 
-// add our markup to the page
+// add markup to the page
 const root = document.getElementById('root')
 
-const updateStore = (store, newState) => {
-    store = Object.assign(store, newState)
-    render(root, store)
+// Function to update store and render new content
+const updateStore = (state, newState) => {
+    let updatedStore = state.set('photos', newState)
+    render(root, updatedStore)
+    document.getElementById('root').style.opacity = 1;
+    document.getElementById('loader-container').style.opacity = 0;
+    document.getElementById('loader-container').style.zIndex = -1;
+
 }
 
+// Function to update selected rover
+updateRover = (state, newRover) => {
+    const updatedStore = state.set('show', newRover)
+    updateStore(updatedStore, state.get('photos'))
+}
+
+// Function to render content
 const render = async (root, state) => {
     root.innerHTML = App(state)
+    if ($('.galleria').length)
+        Galleria.run('.galleria')
 }
 
 
 // create content
 const App = (state) => {
-    let { rovers, apod } = state
-
     return `
-        <header></header>
         <main>
-            ${Greeting(store.user.name)}
             <section>
-                <h3>Put things on the page!</h3>
-                <p>Here is an example section.</p>
+                <h3>Mars Rovers</h3>
                 <p>
-                    One of the most popular websites at NASA is the Astronomy Picture of the Day. In fact, this website is one of
-                    the most popular websites across all federal agencies. It has the popular appeal of a Justin Bieber video.
-                    This endpoint structures the APOD imagery and associated metadata so that it can be repurposed for other
-                    applications. In addition, if the concept_tags parameter is set to True, then keywords derived from the image
-                    explanation are returned. These keywords could be used as auto-generated hashtags for twitter or instagram feeds;
-                    but generally help with discoverability of relevant imagery.
+                    Click on the buttons to see the recent images taken by actual Mars Rovers!
                 </p>
-                ${ImageOfTheDay(apod)}
+            </section>
+            <section>
+                ${getMarsImages(state)}
             </section>
         </main>
-        <footer></footer>
     `
 }
 
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
+    document.getElementById('root').style.opacity = 0;
+    document.getElementById('loader-container').style.opacity = 1;
+    document.getElementById('loader-container').style.zIndex = 4;
     render(root, store)
 })
 
-// ------------------------------------------------------  COMPONENTS
-
-// Pure function that renders conditional information -- THIS IS JUST AN EXAMPLE, you can delete it.
-const Greeting = (name) => {
-    if (name) {
+// Pure function that renders infomation requested from the backend
+const getMarsImages = (state) => {
+    if (!state.get('photos') || state.get('photos').rover.name !== state.get('rovers')[state.get('show')]) {
+        fetchImages(state)
         return `
-            <h1>Welcome, ${name}!</h1>
+            <p>Oops, failed to fetch images!</p>
+        `
+    } else {
+        return `
+            <div class="galleria">
+                ${state.get('photos').photos.map(photo => 
+                    `<img src="${photo.url}" data-title="Camera: ${photo.camera}" data-description="Sol: ${photo.sol}">`
+                )}
+            </div>
+            <div class="rover-info">
+                <span class="info">Rover name: <span class="info-value">${state.get('photos').rover.name}</span></span>
+                <span class="info">Launch date: <span class="info-value">${state.get('photos').rover.launch_date}</span></span>
+                <span class="info">Landing date: <span class="info-value">${state.get('photos').rover.landing_date}</span></span>
+                <span class="info">Maximum pic date: <span class="info-value">${state.get('photos').rover.max_date}</span></span>
+                <span class="info">Rover status: <span class="info-value">${state.get('photos').rover.status}</span></span>
+            </div>
         `
     }
-
-    return `
-        <h1>Hello!</h1>
-    `
 }
 
-// Example of a pure function that renders infomation requested from the backend
-const ImageOfTheDay = (apod) => {
-
-    // If image does not already exist, or it is not from today -- request it again
-    const today = new Date()
-    const photodate = new Date(apod.date)
-    console.log(photodate.getDate(), today.getDate());
-
-    console.log(photodate.getDate() === today.getDate());
-    if (!apod || apod.date === today.getDate() ) {
-        getImageOfTheDay(store)
-    }
-
-    // check if the photo of the day is actually type video!
-    if (apod.media_type === "video") {
-        return (`
-            <p>See today's featured video <a href="${apod.url}">here</a></p>
-            <p>${apod.title}</p>
-            <p>${apod.explanation}</p>
-        `)
-    } else {
-        return (`
-            <img src="${apod.image.url}" height="350px" width="100%" />
-            <p>${apod.image.explanation}</p>
-        `)
-    }
-}
-
-// ------------------------------------------------------  API CALLS
-
-// Example API call
-const getImageOfTheDay = (state) => {
-    let { apod } = state
-
-    fetch(`http://localhost:3000/apod`)
+// API CALLS
+const fetchImages = (state) => {
+    fetch(`http://localhost:3000/apo`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({rover: state.get('rovers')[state.get('show')]})
+    })
         .then(res => res.json())
-        .then(apod => updateStore(store, { apod }))
-
-    return data
+        .then(info => updateStore(state, info))
+        .catch(err => {
+            alert('Couldnot fetch images')
+            document.getElementById('root').style.opacity = 1;
+            document.getElementById('loader-container').style.opacity = 0;
+            document.getElementById('loader-container').style.zIndex = -1;
+                    
+        })
 }
+
+// Update rover to show
+update = (index) => {
+    updateRover(store, index)
+    document.getElementById('root').style.opacity = 0;
+    document.getElementById('loader-container').style.opacity = 1;
+    document.getElementById('loader-container').style.zIndex = 1;
+}
+
+

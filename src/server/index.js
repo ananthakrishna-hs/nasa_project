@@ -12,16 +12,31 @@ app.use(bodyParser.json())
 
 app.use('/', express.static(path.join(__dirname, '../public')))
 
-// your API calls
-
-// example API call
-app.get('/apod', async (req, res) => {
+// Function to get recent pic date and get photos for that date
+app.post('/apod', async (req, res) => {
     try {
-        let image = await fetch(`https://api.nasa.gov/planetary/apod?api_key=${process.env.API_KEY}`)
+        const date_data = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.body.rover}/photos?sol=1&api_key=${process.env.API_KEY}`)
             .then(res => res.json())
-        res.send({ image })
+        const max_date = date_data.photos[0].rover.max_date
+        const data = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.body.rover}/photos?earth_date=${max_date}&api_key=${process.env.API_KEY}`)
+            .then(res => res.json())
+        
+        const roverInfo = data.photos[0].rover
+        let photos = []
+        data.photos.forEach(photoObject => {
+            const photoItem = {
+                url: photoObject.img_src,
+                sol: photoObject.sol,
+                camera: photoObject.camera.full_name
+            }
+            photos.push(photoItem)
+        })
+        res.send({
+            rover: roverInfo,
+            photos: photos
+        })
     } catch (err) {
-        console.log('error:', err);
+        res.sendStatus(400)
     }
 })
 

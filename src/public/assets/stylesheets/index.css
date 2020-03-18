@@ -7,8 +7,79 @@ body {
   min-height: 100vh;
 }
 
-header {
-  /* header styles */
+header h1 {
+  color: red;
+  padding: 10px;
+  text-align: center;
+  text-shadow: 1px 1px 5px black;
+}
+
+#loader-container {
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+  background-color: white;
+  width: 100%;
+  height: 100%;
+}
+
+#loader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100px;
+  height: 100px;
+  transform: translate(-50%, -50%);
+}
+
+.bg {
+  opacity: 1;
+}
+
+.galleria {
+  margin: 0 auto;
+  height: 50vh;
+  width: 75%;
+}
+
+.selection-panel {
+  margin: 0 auto;
+  width: 75%;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+}
+
+.selection-panel button {
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  box-shadow: 0 0 5px green;
+  border: 1px solid red;
+  background-color: #fff;
+  color: black;
+  width: 100px;
+  margin: 10px auto;
+}
+
+.rover-info {
+  display: flex;
+  flex-direction: column;
+  margin: 5px auto;
+  width: 75%;
+  text-align: center;
+}
+
+.rover-info .info {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rover-info .info .info-value {
+  font-weight: 400;
+  font-style: italic;
 }
 
 main {
@@ -17,22 +88,13 @@ main {
 }
 
 footer {
-  /* footer styles */
+  font-style: italic;
+  text-align: center;
 }
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-  /* use mobile */
-}
-
-/* -------------------  DESKTOP  -------------------- */
-
-@media (min-width: 1224px) {
-  /* use mobile */
-}
-
-/* -------------------  LARGE SCREENS  -------------- */
-
-@media (min-width: 1824px) {
-  /* use mobile */
+  .selection-panel {
+    flex-direction: row;
+  }
 }
