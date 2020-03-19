@@ -13,7 +13,8 @@ app.use(bodyParser.json())
 app.use('/', express.static(path.join(__dirname, '../public')))
 
 // Function to get recent pic date and get photos for that date
-app.post('/apod', async (req, res) => {
+// Uses HOF: 'forEach'
+app.post('/rover', async (req, res) => {
     try {
         const date_data = await fetch(`https://api.nasa.gov/mars-photos/api/v1/rovers/${req.body.rover}/photos?sol=1&api_key=${process.env.API_KEY}`)
             .then(res => res.json())

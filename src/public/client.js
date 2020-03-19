@@ -7,11 +7,12 @@ let store = Immutable.Map({
 
 // add markup to the page
 const root = document.getElementById('root')
+const panel = document.getElementById('selection-panel')
 
 // Function to update store and render new content
 const updateStore = (state, newState) => {
     let updatedStore = state.set('photos', newState)
-    render(root, updatedStore)
+    render(root, panel, updatedStore)
     document.getElementById('root').style.opacity = 1;
     document.getElementById('loader-container').style.opacity = 0;
     document.getElementById('loader-container').style.zIndex = -1;
@@ -19,21 +20,22 @@ const updateStore = (state, newState) => {
 }
 
 // Function to update selected rover
-updateRover = (state, newRover) => {
+const updateRover = (state, newRover) => {
     const updatedStore = state.set('show', newRover)
     updateStore(updatedStore, state.get('photos'))
 }
 
 // Function to render content
-const render = async (root, state) => {
-    root.innerHTML = App(state)
+const render = async (root, panel, state) => {
+    root.innerHTML = Gallery(state)
+    panel.innerHTML = Panel(state)
     if ($('.galleria').length)
         Galleria.run('.galleria')
 }
 
 
-// create content
-const App = (state) => {
+// Higher order function to create gallery content. This is HOF as it returns function call
+const Gallery = (state) => {
     return `
         <main>
             <section>
@@ -49,15 +51,28 @@ const App = (state) => {
     `
 }
 
+// Higher order function to create panel content. This is HOF as it returns function call
+// Also uses HOF 'map'
+const Panel = (state) => {
+    console.log(state.get('rovers'))
+    return `
+        ${state.get('rovers').map((rover, index) =>
+            `<button onclick="update(${index})">${rover}</button>`    
+        ).join('')}
+    `
+}
+
 // listening for load event because page should load before any JS is called
 window.addEventListener('load', () => {
     document.getElementById('root').style.opacity = 0;
     document.getElementById('loader-container').style.opacity = 1;
     document.getElementById('loader-container').style.zIndex = 4;
-    render(root, store)
+    render(root, panel, store)
+    console.log(root)
 })
 
 // Pure function that renders infomation requested from the backend
+// Uses HOF: map
 const getMarsImages = (state) => {
     if (!state.get('photos') || state.get('photos').rover.name !== state.get('rovers')[state.get('show')]) {
         fetchImages(state)
@@ -84,7 +99,7 @@ const getMarsImages = (state) => {
 
 // API CALLS
 const fetchImages = (state) => {
-    fetch(`http://localhost:3000/apo`, {
+    fetch(`http://localhost:3000/rover`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -103,7 +118,7 @@ const fetchImages = (state) => {
 }
 
 // Update rover to show
-update = (index) => {
+const update = (index) => {
     updateRover(store, index)
     document.getElementById('root').style.opacity = 0;
     document.getElementById('loader-container').style.opacity = 1;

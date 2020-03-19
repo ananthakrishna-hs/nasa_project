@@ -44,7 +44,7 @@ header h1 {
   width: 75%;
 }
 
-.selection-panel {
+#selection-panel {
   margin: 0 auto;
   width: 75%;
   display: flex;
@@ -52,7 +52,7 @@ header h1 {
   flex-direction: column;
 }
 
-.selection-panel button {
+#selection-panel button {
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
@@ -94,7 +94,7 @@ footer {
 
 /* -------------------  TABLET  --------------------- */
 @media (min-width: 768px) {
-  .selection-panel {
+  #selection-panel {
     flex-direction: row;
   }
 }
