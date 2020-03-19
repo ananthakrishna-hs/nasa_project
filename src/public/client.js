@@ -7,7 +7,7 @@ let store = Immutable.Map({
 
 // add markup to the page
 const root = document.getElementById('root')
-const panel = document.getElementById('selection-panel')
+const panel = document.getElementById('panel')
 
 // Function to update store and render new content
 const updateStore = (state, newState) => {
@@ -54,11 +54,11 @@ const Gallery = (state) => {
 // Higher order function to create panel content. This is HOF as it returns function call
 // Also uses HOF 'map'
 const Panel = (state) => {
-    console.log(state.get('rovers'))
     return `
-        ${state.get('rovers').map((rover, index) =>
-            `<button onclick="update(${index})">${rover}</button>`    
-        ).join('')}
+        <div id="selection-panel">
+            ${getRovers(state)}
+        </div>
+        
     `
 }
 
@@ -95,6 +95,14 @@ const getMarsImages = (state) => {
             </div>
         `
     }
+}
+
+const getRovers = (state) => {
+    return `
+        ${state.get('rovers').map((rover, index) =>
+            `<button onclick="update(${index})">${rover}</button>`    
+        ).join('')}
+    `
 }
 
 // API CALLS

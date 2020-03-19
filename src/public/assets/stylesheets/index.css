@@ -44,6 +44,10 @@ header h1 {
   width: 75%;
 }
 
+#panel {
+  width: 100%;
+}
+
 #selection-panel {
   margin: 0 auto;
   width: 75%;
